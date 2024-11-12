@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Conversión de Unidades</title>
+    <style>
+        /* Estilos globales */
+        body {
+            font-family: Arial, sans-serif;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url(https://quimicafacil.net/wp-content/uploads/2021/12/Wallpaper-QF-50-scaled.jpg
+                        ) no-repeat center center fixed;
+            background-size: cover;
+        }
+        h2, h3 {
+            color: #26c6da;
+        }
+        form {
+            background-color: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 150, 136, 0.5);
+            width: 300px;
+            margin-bottom: 30px;
+        }
+        label, select, input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        input, select {
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            background-color: #333;
+            color: #ffffff;
+        }
+        input::placeholder {
+            color: #bbb;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #26c6da;
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #00acc1;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        #resultado {
+            color: #26c6da;
+            font-weight: bold;
+        }
+        /* Estilos para el Sistema Internacional de Unidades */
+        .si-section {
+            background-color: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 0 15px rgba(0, 150, 136, 0.5);
+            margin-top: 30px;
+        }
+        .si-section h3 {
+            color: #26c6da;
+        }
+        .si-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .si-table th, .si-table td {
+            padding: 10px;
+            border-bottom: 1px solid #333;
+        }
+        .si-table th {
+            color: #26c6da;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h2>Calculadora de Conversión de Unidades</h2>
+    <form id="form-conversion" onsubmit="convertir(event)">
+        <label for="valor">Valor a convertir:</label>
+        <input type="number" id="valor" placeholder="Ej. 10" required>
+
+        <label for="unidad-origen">Unidad de origen:
+            <span class="tooltip">?
+                <span class="tooltiptext">Selecciona la unidad de origen</span>
+            </span>
+        </label>
+        <select id="unidad-origen" required>
+            <optgroup label="Masa">
+                <option value="ton">Ton</option>
+                <option value="kg">Kg</option>
+                <option value="g">g</option>
+                <option value="mg">mg</option>
+                <option value="ug">ug</option>
+            </optgroup>
+            <optgroup label="Volumen">
+                <option value="gal">Gal</option>
+                <option value="m3">m³</option>
+                <option value="l">L</option>
+                <option value="ml">mL</option>
+                <option value="ul">uL</option>
+            </optgroup>
+            <optgroup label="Distancia">
+                <option value="yd">Yarda</option>
+                <option value="in">Pulgada</option>
+                <option value="m">Metro</option>
+                <option value="cm">Centímetro</option>
+                <option value="km">Kilómetro</option>
+                <option value="mm">Milímetro</option>
+            </optgroup>
+            <optgroup label="Densidad">
+                <option value="kg/m3">Kg/m³</option>
+                <option value="g/ml">g/mL</option>
+                <option value="kg/l">Kg/L</option>
+                <option value="g/l">g/L</option>
+            </optgroup>
+            <optgroup label="Presión">
+                <option value="mmhg">mmHg</option>
+                <option value="atm">Atm</option>
+                <option value="pa">Pa</option>
+                <option value="psi">psi</option>
+                <option value="torr">Torr</option>
+            </optgroup>
+            <optgroup label="Tiempo">
+                <option value="s">s</option>
+                <option value="min">min</option>
+                <option value="h">hora</option>
+            </optgroup>
+            <optgroup label="Fuerza">
+                <option value="n">Newton</option>
+                <option value="kn">Kilonewton</option>
+                <option value="mn">Micronewton</option>
+                <option value="dyn">Dina</option>
+                <option value="kgf">Kilogramofuerza</option>
+            </optgroup>
+            <optgroup label="Energía">
+                <option value="kj">KJ</option>
+                <option value="kcal">Kcal</option>
+            </optgroup>
+        </select>
+
+        <label for="unidad-destino">Unidad de destino:
+            <span class="tooltip">?
+                <span class="tooltiptext">Selecciona la unidad de destino</span>
+            </span>
+        </label>
+        <select id="unidad-destino" required>
+            <optgroup label="Masa">
+                <option value="ton">Ton</option>
+                <option value="kg">Kg</option>
+                <option value="g">g</option>
+                <option value="mg">mg</option>
+                <option value="ug">ug</option>
+            </optgroup>
+            <optgroup label="Volumen">
+                <option value="gal">Gal</option>
+                <option value="m3">m³</option>
+                <option value="l">L</option>
+                <option value="ml">mL</option>
+                <option value="ul">uL</option>
+            </optgroup>
+            <optgroup label="Distancia">
+                <option value="yd">Yarda</option>
+                <option value="in">Pulgada</option>
+                <option value="m">Metro</option>
+                <option value="cm">Centímetro</option>
+                <option value="km">Kilómetro</option>
+                <option value="mm">Milímetro</option>
+            </optgroup>
+            <optgroup label="Densidad">
+                <option value="kg/m3">Kg/m³</option>
+                <option value="g/ml">g/mL</option>
+                <option value="kg/l">Kg/L</option>
+                <option value="g/l">g/L</option>
+            </optgroup>
+            <optgroup label="Presión">
+                <option value="mmhg">mmHg</option>
+                <option value="atm">Atm</option>
+                <option value="pa">Pa</option>
+                <option value="psi">psi</option>
+                <option value="torr">Torr</option>
+            </optgroup>
+            <optgroup label="Tiempo">
+                <option value="s">s</option>
+                <option value="min">min</option>
+                <option value="h">hora</option>
+            </optgroup>
+            <optgroup label="Fuerza">
+                <option value="n">Newton</option>
+                <option value="kn">Kilonewton</option>
+                <option value="mn">Micronewton</option>
+                <option value="dyn">Dina</option>
+                <option value="kgf">Kilogramofuerza</option>
+            </optgroup>
+            <optgroup label="Energía">
+                <option value="kj">KJ</option>
+                <option value="kcal">Kcal</option>
+            </optgroup>
+        </select>
+
+        <button type="submit">Convertir</button>
+    </form>
+
+    <h3>Resultado: <span id="resultado">-</span></h3>
+
+    <!-- Sección del Sistema Internacional de Unidades -->
+    <div class="si-section">
+        <h3>Sistema Internacional de Unidades (SI)</h3>
+        <p>El Sistema Internacional de Unidades (SI) es el estándar global para medir y expresar magnitudes físicas. A continuación, se muestran algunas unidades comunes, sus usos y fórmulas relevantes en cada ámbito.</p>
+        
+        <table class="si-table">
+            <tr>
+                <th>Magnitud</th>
+                <th>Unidades (SI)</th>
+                <th>Descripción y Fórmulas</th>
+            </tr>
+            <tr>
+                <td>Masa</td>
+                <td>Tonelada (t), Kilogramo (kg), Gramo (g), Miligramo (mg), Microgramo (µg)</td>
+                <td>La masa mide la cantidad de materia en un objeto. Fórmula:<br>Fuerza = Masa × Gravedad (F = m × g)</td>
+            </tr>
+            <tr>
+                <td>Volumen</td>
+                <td>Galón (gal), Metro cúbico (m³), Litro (L), Mililitro (mL), Microlitro (µL)</td>
+                <td>El volumen mide el espacio ocupado. Fórmula:<br>Volumen de un cubo = lado³</td>
+            </tr>
+            <tr>
+                <td>Distancia</td>
+                <td>Yarda (yd), Pulgada (in), Metro (m), Centímetro (cm), Kilómetro (km), Milímetro (mm)</td>
+                <td>La distancia representa la longitud entre dos puntos. Ejemplo:<br>Velocidad = Distancia / Tiempo (v = d / t)</td>
+            </tr>
+            <tr>
+                <td>Densidad</td>
+                <td>Kilogramo por metro cúbico (kg/m³), Gramo por mililitro (g/mL), Kilogramo por litro (kg/L), Gramo por litro (g/L)</td>
+                <td>La densidad mide la masa por unidad de volumen. Fórmula:<br>Densidad = Masa / Volumen (ρ = m / V)</td>
+            </tr>
+            <tr>
+                <td>Presión</td>
+                <td>Milímetro de mercurio (mmHg), Atmósfera (atm), Pascal (Pa), Libra por pulgada cuadrada (psi), Torr</td>
+                <td>La presión mide la fuerza aplicada por unidad de área. Fórmula:<br>Presión = Fuerza / Área (P = F / A)</td>
+            </tr>
+            <tr>
+                <td>Tiempo</td>
+                <td>Segundo (s), Minuto (min), Hora (h)</td>
+                <td>El tiempo mide la duración de eventos.</td>
+            </tr>
+            <tr>
+                <td>Fuerza</td>
+                <td>Newton (N), Kilonewton (kN), Micronewton (µN), Dina, Kilogramofuerza (kgf)</td>
+                <td>La fuerza es una interacción que causa un cambio en el movimiento de un objeto. Fórmula:<br>Fuerza = Masa × Aceleración (F = m × a)</td>
+            </tr>
+            <tr>
+                <td>Energía</td>
+                <td>Kilojulio (kJ), Kilocaloría (kcal)</td>
+                <td>La energía es la capacidad de realizar trabajo o generar movimiento. Fórmula:<br>Energía = Fuerza × Distancia (E = F × d)</td>
+            </tr>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.0.0/math.min.js"></script>
+    <script>
+        function convertir(event) {
+            event.preventDefault(); // Evita que la página se recargue al enviar el formulario
+            const valor = parseFloat(document.getElementById("valor").value);
+            const unidadOrigen = document.getElementById("unidad-origen").value;
+            const unidadDestino = document.getElementById("unidad-destino").value;
+
+            try {
+                // Convierte el valor utilizando math.js
+                const resultado = math.unit(valor, unidadOrigen).to(unidadDestino).toNumber();
+
+                // Convierte el número a notación científica con multiplicador y potencia explícitos
+                const notacionCientifica = resultado.toExponential(2).replace("e", " × 10^");
+
+                document.getElementById("resultado").textContent = `${notacionCientifica} ${unidadDestino}`;
+            } catch (error) {
+                document.getElementById("resultado").textContent = "Error: Conversión no válida";
+            }
+        }
+    </script>
+</body>
+</html>
